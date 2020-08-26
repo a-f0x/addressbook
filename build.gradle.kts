@@ -9,7 +9,12 @@ plugins {
 }
 
 group = "com.example"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
+tasks.bootJar {
+	archiveName = "application.jar"
+	mainClassName = "com.example.addressbook.AddressBookApplication"
+}
+
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {

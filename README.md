@@ -1,3 +1,8 @@
-# addressbook
+# Address Book
+* Адресная книга. 
 
-Валидация объекта целеком а не по полям используется потому что баг https://youtrack.jetbrains.com/issue/KT-13228
+
+
+* должен быть установлен docker, docker-compose**
+* запустить run.sh
+* открыть в браузере http://localhost:8080/swagger-ui.html#/contacts-controller/getAllContactsUsingGET и нажать кнопку *Try it out* потом  *Execute*

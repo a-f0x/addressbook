@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  address_book:
+    ports:
+      - "${SERVER_PORT}:8080"
+    build:
+      context: .
+    container_name: address-book
+    environment:
+      - server_port=8080
