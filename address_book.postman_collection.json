@@ -1,0 +1,187 @@
+{
+  "info": {
+    "_postman_id": "e9ba4788-78a5-4bf5-aba1-d8fc2fe9db05",
+    "name": "address_book",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "get_all_contacts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/contacts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "contacts"
+          ]
+        },
+        "description": "get_all_contacts\n"
+      },
+      "response": []
+    },
+    {
+      "name": "add_contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\":\"f0x2\",\n    \n    \"address\":\"Kemerovo Ololo streeet\", \n    \"phones\":[\n        {\n         \"number\":\"+79236177083\", \n         \"type\"   :\"MOBILE\"\n        }\n    ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/contacts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "contacts"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update_contact",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n            \"id\": 1,\n            \"first_name\": \"Eugeniy\",\n            \"last_name\": \"Doronin\",\n            \"address\": \"Kemerovo city, Lenina st. 4\",\n            \"phones\": [\n                {\n                    \"number\": \"+79236150110\",\n                    \"type\": \"WORK\"\n                }, \n                {\n                    \"number\": \"+79236150160\",\n                    \"type\": \"HOME\"\n                }\n            ]\n        }"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/contacts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "contacts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete_contacts",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n    1\n]"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/contacts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "contacts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "find_contacts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/contacts/search?query=f0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "contacts",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "query",
+              "value": "f0"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "protocolProfileBehavior": {}
+}
