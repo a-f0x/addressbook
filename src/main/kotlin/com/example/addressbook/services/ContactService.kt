@@ -56,6 +56,10 @@ class ContactService(
         )
     }
 
+    override fun update(dto: ContactDTO): ContactDTO {
+        TODO("Not yet implemented")
+    }
+
     override fun getAll(): List<ContactDTO> {
         return phoneRepository.findAll().map {
             ContactDTO(

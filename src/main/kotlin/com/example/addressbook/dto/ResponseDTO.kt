@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class ResponseDTO<T : Any>(
         val data: T?,
-        val errors: List<ErrorDTO>?
+        val error: ErrorDTO?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +19,9 @@ class ErrorDTO(
     enum class ErrorCode {
         @JsonProperty("validation")
         VALIDATION,
+
+        @JsonProperty("not_found")
+        NOT_FOUND,
 
         @JsonProperty("server")
         SERVER

@@ -5,12 +5,10 @@ import com.example.addressbook.exceptions.ContactNotFoundException
 import com.example.addressbook.repository.ContactRepository
 import com.example.addressbook.repository.PhoneRepository
 import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
 import javax.validation.Payload
 import kotlin.reflect.KClass
 
-@Constraint(validatedBy = [CreateContactValidator::class])
+@Constraint(validatedBy = [UpdateContactValidator::class])
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class CorrectUpdateContact(
@@ -19,15 +17,34 @@ annotation class CorrectUpdateContact(
         val payload: Array<KClass<out Payload>> = [])
 
 class UpdateContactValidator(
-        private val contactRepository: ContactRepository,
-        private val phoneRepository: PhoneRepository
+        phoneRepository: PhoneRepository,
+        phoneValidator: IPhoneValidator,
+        private val contactRepository: ContactRepository
 
-) : ConstraintValidator<CorrectUpdateContact, UpdateContactDTO> {
+) : BaseContactValidator<CorrectUpdateContact, UpdateContactDTO>(phoneRepository, phoneValidator) {
 
-    override fun isValid(value: UpdateContactDTO, context: ConstraintValidatorContext?): Boolean {
-        val exist = contactRepository.existsById(value.id)
+    override fun validate(dto: UpdateContactDTO): Boolean {
+        if (dto.id == 0) {
+            return successResultOrException(
+                    mapOf("id" to SHOULD_BE_NOT_EMPTY_MESSAGE),
+                    dto
+            )
+        }
+
+        val exist = contactRepository.existsById(dto.id)
         if (exist.not())
-            throw ContactNotFoundException()
+            throw ContactNotFoundException(mapOf("id" to dto.id))
 
+        validateContact(dto)
+
+        val notHisPhones = getPhonesByNumbers(dto.phones.map { it.number }).filterNot { it.contact.id == dto.id }
+        if (notHisPhones.isNotEmpty()) {
+            return successResultOrException(
+                    createNotHisPhonesError(notHisPhones),
+                    dto
+            )
+        }
+
+        return true
     }
 }

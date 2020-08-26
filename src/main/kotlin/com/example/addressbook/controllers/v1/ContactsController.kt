@@ -28,8 +28,7 @@ class ContactsController(private val service: IContactService) {
     @PutMapping(produces = [(MediaType.APPLICATION_JSON_VALUE)], consumes = [(MediaType.APPLICATION_JSON_VALUE)])
     fun updateContact(
             @RequestBody @Valid contact: UpdateContactDTO): ResponseEntity<ResponseDTO<ContactDTO>> {
-
-        return createSuccessResponseEntity(service.add(contact))
+        return createSuccessResponseEntity(service.update(contact))
     }
 
 }

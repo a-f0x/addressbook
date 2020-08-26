@@ -1,13 +1,8 @@
 package com.example.addressbook.validators
 
-import com.example.addressbook.dto.ContactDTO
 import com.example.addressbook.dto.CreateContactDTO
-import com.example.addressbook.entity.PhoneEntity
-import com.example.addressbook.exceptions.NotAcceptableDataException
 import com.example.addressbook.repository.PhoneRepository
 import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
 import javax.validation.Payload
 import kotlin.reflect.KClass
 
@@ -19,23 +14,23 @@ annotation class CorrectCreateContact(
         val groups: Array<KClass<*>> = [],
         val payload: Array<KClass<out Payload>> = [])
 
-class CreateContactValidator(private val repo: PhoneRepository) : ConstraintValidator<CorrectCreateContact, CreateContactDTO> {
+class CreateContactValidator(repo: PhoneRepository,
+                             phoneValidator: IPhoneValidator
+) : BaseContactValidator<CorrectCreateContact, CreateContactDTO>(repo, phoneValidator) {
 
-    override fun isValid(value: CreateContactDTO, context: ConstraintValidatorContext?): Boolean {
-        val phones = repo.findAllByNumberIn(value.phones.map { it.number })
 
-        if (phones.isEmpty())
-            return true
-        throw buildException(value, phones)
+    override fun validate(dto: CreateContactDTO): Boolean {
+        validateContact(dto)
 
-    }
+        val phones = getPhonesByNumbers(dto.phones.map { it.number })
 
-    private fun buildException(value: ContactDTO, phones: List<PhoneEntity>): NotAcceptableDataException {
-
-        val errors = mutableMapOf<String, String>()
-        phones.forEach { p ->
-            errors[p.number] = "Belongs to contactId ${p.contact.id}"
+        if (phones.isNotEmpty()) {
+            return successResultOrException(
+                    createNotHisPhonesError(phones),
+                    dto
+            )
         }
-        return NotAcceptableDataException(value, errors)
+
+        return true
     }
 }
