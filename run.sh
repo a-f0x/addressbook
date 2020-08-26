@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
-docker build .
+docker build . --tag address_book:latest
 docker-compose up

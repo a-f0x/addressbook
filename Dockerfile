@@ -1,8 +1,6 @@
 FROM java:8-alpine AS build-env
 
-RUN apk update && \
-    apk add --update tzdata && \
-    mkdir -p /usr/local/src/book
+RUN mkdir -p /usr/local/src/book
 
 WORKDIR /usr/local/src/book
 ADD . /usr/local/src/book
@@ -16,6 +14,5 @@ RUN apk update && \
 WORKDIR /usr/local/bin/book
 
 COPY --from=build-env /usr/local/src/book/build/libs/application.jar app.jar
-
 
 ENTRYPOINT exec java -jar app.jar
