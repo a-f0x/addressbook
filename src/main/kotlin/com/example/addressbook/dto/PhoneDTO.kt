@@ -4,7 +4,7 @@ import com.example.addressbook.enum.PhoneType
 
 data class PhoneDTO(
         val id: Int?,
-        val phone: String,
+        val number: String,
         val type: PhoneType
 )
 

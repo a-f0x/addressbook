@@ -7,11 +7,11 @@ import javax.persistence.*
 @Table(name = "phones")
 open class PhoneEntity() {
     constructor(
-            phone: String,
+            number: String,
             phoneType: PhoneTypeEntity,
             contact: ContactEntity
     ) : this() {
-        this.phone = phone
+        this.number = number
         this.phoneType = phoneType
         this.contact = contact
 
@@ -21,8 +21,8 @@ open class PhoneEntity() {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Int = 0
 
-    @Column(name = "phone", length = 11, nullable = false, unique = true)
-    open lateinit var phone: String
+    @Column(name = "number", length = 11, nullable = false, unique = true)
+    open lateinit var number: String
 
     @OneToOne
     open lateinit var phoneType: PhoneTypeEntity

@@ -31,7 +31,7 @@ class ContactService(
         ).apply {
             phones = it.phones.map { phoneDto ->
                 PhoneEntity(
-                        phoneDto.phone,
+                        phoneDto.number,
                         typeCache[phoneDto.type] ?: error("Invalid phone type"),
                         this
                 )
@@ -49,7 +49,7 @@ class ContactService(
                 it.phones.map { phoneEntity ->
                     PhoneDTO(
                             phoneEntity.id,
-                            phoneEntity.phone,
+                            phoneEntity.number,
                             phoneEntity.phoneType.type
                     )
                 }.toList()
@@ -66,7 +66,7 @@ class ContactService(
                     it.phones.map { phoneEntity ->
                         PhoneDTO(
                                 phoneEntity.id,
-                                phoneEntity.phone,
+                                phoneEntity.number,
                                 phoneEntity.phoneType.type
                         )
                     }.toList()
