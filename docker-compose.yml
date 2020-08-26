@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  address_book:
+  app:
     image: address_book:latest
     ports:
       - "${SERVER_PORT}:8080"
