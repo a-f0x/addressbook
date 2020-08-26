@@ -23,6 +23,9 @@ class ErrorDTO(
         @JsonProperty("not_found")
         NOT_FOUND,
 
+        @JsonProperty("bad_request")
+        BAD_REQUEST,
+
         @JsonProperty("server")
         SERVER
     }

@@ -7,13 +7,9 @@ spring:
       hibernate.temp.use_jdbc_metadata_defaults: false
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-  #    hibernate:
-  #      ddl-auto: validate
-
   h2:
     console:
       enabled: true
-
   datasource:
     url: jdbc:h2:file:./db/address_book
     username: sa

@@ -12,4 +12,8 @@ interface IContactService {
     fun update(dto: UpdateContactDTO): ContactDTO
 
     fun getAll(): List<ContactDTO>
+
+    fun delete(ids: List<Int>)
+
+    fun search(firstName: String, lastName: String?): List<ContactDTO>
 }

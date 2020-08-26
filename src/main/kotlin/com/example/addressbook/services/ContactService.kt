@@ -30,6 +30,7 @@ class ContactService(
                 }.toMap()
     }
 
+    @Transactional
     override fun add(dto: CreateContactDTO): ContactDTO = dto.let {
         ContactEntity(
                 it.firstName,
@@ -53,8 +54,23 @@ class ContactService(
 
     }
 
-    override fun getAll(): List<ContactDTO> {
-        return contactRepository.findAll().map {
+    override fun getAll(): List<ContactDTO> = contactRepository.findAll().map {
+        ContactDTO(
+                it.id,
+                it.firstName,
+                it.lastName,
+                it.address,
+                mapPhoneEntity2Dto(it.phones)
+        )
+    }
+
+    @Transactional
+    override fun delete(ids: List<Int>) {
+        contactRepository.deleteAllByIdIn(ids)
+    }
+
+    override fun search(firstName: String, lastName: String?): List<ContactDTO> {
+        return if (lastName != null) contactRepository.findAllByLastNameAndFirstName(lastName, firstName).map {
             ContactDTO(
                     it.id,
                     it.firstName,
@@ -62,7 +78,16 @@ class ContactService(
                     it.address,
                     mapPhoneEntity2Dto(it.phones)
             )
-        }
+        } else
+            contactRepository.findAllByFirstName(firstName).map {
+                ContactDTO(
+                        it.id,
+                        it.firstName,
+                        it.lastName,
+                        it.address,
+                        mapPhoneEntity2Dto(it.phones)
+                )
+            }
     }
 
     private fun save(entity: ContactEntity): ContactDTO = contactRepository.save(entity).let {
