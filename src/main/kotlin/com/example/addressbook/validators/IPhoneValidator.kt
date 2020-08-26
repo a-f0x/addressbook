@@ -1,9 +1,9 @@
 package com.example.addressbook.validators
 
+import com.example.addressbook.exceptions.PhoneValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-class PhoneValidationException(override val message: String) : Exception()
 
 interface IPhoneValidator {
     @Throws(PhoneValidationException::class)
