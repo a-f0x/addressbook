@@ -33,7 +33,7 @@ class UpdateContactValidator(
 
         val exist = contactRepository.existsById(dto.id)
         if (exist.not())
-            throw ContactNotFoundException(mapOf("id" to dto.id))
+            throw ContactNotFoundException(dto.id)
 
         validateContact(dto)
 

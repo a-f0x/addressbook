@@ -1,18 +1,25 @@
 package com.example.addressbook.services
 
+import com.example.addressbook.containsByPredicate
 import com.example.addressbook.dto.ContactDTO
+import com.example.addressbook.dto.CreateContactDTO
 import com.example.addressbook.dto.PhoneDTO
+import com.example.addressbook.dto.UpdateContactDTO
 import com.example.addressbook.entity.ContactEntity
 import com.example.addressbook.entity.PhoneEntity
 import com.example.addressbook.entity.PhoneTypeEntity
 import com.example.addressbook.enum.PhoneType
+import com.example.addressbook.exceptions.ContactNotFoundException
 import com.example.addressbook.repository.ContactRepository
+import com.example.addressbook.repository.PhoneRepository
 import com.example.addressbook.repository.PhoneTypeRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ContactService(
-        private val phoneRepository: ContactRepository,
+        private val contactRepository: ContactRepository,
+        private val phoneRepository: PhoneRepository,
         phoneTypeRepository: PhoneTypeRepository
 ) : IContactService {
 
@@ -23,58 +30,90 @@ class ContactService(
                 }.toMap()
     }
 
-    override fun add(dto: ContactDTO): ContactDTO = dto.let {
+    override fun add(dto: CreateContactDTO): ContactDTO = dto.let {
         ContactEntity(
                 it.firstName,
                 it.lastName,
                 it.address
         ).apply {
-            phones = it.phones.map { phoneDto ->
-                PhoneEntity(
-                        phoneDto.number,
-                        typeCache[phoneDto.type] ?: error("Invalid phone type"),
-                        this
-                )
-            }.toMutableSet()
+            phones = mapPhoneDTO2Entity(dto.phones, this)
 
         }
     }.let {
-        phoneRepository.save(it)
-    }.let {
-        ContactDTO(
-                it.id,
-                it.firstName,
-                it.lastName,
-                it.address,
-                it.phones.map { phoneEntity ->
-                    PhoneDTO(
-                            phoneEntity.id,
-                            phoneEntity.number,
-                            phoneEntity.phoneType.type
-                    )
-                }.toList()
-        )
+        save(it)
     }
 
-    override fun update(dto: ContactDTO): ContactDTO {
-        TODO("Not yet implemented")
+    @Throws(ContactNotFoundException::class)
+    @Transactional
+    override fun update(dto: UpdateContactDTO): ContactDTO {
+        val old = contactRepository.findById(dto.id)
+        if (old.isPresent.not())
+            throw ContactNotFoundException(dto.id)
+        return updateContact(old.get(), dto)
+
     }
 
     override fun getAll(): List<ContactDTO> {
-        return phoneRepository.findAll().map {
+        return contactRepository.findAll().map {
             ContactDTO(
                     it.id,
                     it.firstName,
                     it.lastName,
                     it.address,
-                    it.phones.map { phoneEntity ->
-                        PhoneDTO(
-                                phoneEntity.id,
-                                phoneEntity.number,
-                                phoneEntity.phoneType.type
-                        )
-                    }.toList()
+                    mapPhoneEntity2Dto(it.phones)
             )
         }
     }
+
+    private fun save(entity: ContactEntity): ContactDTO = contactRepository.save(entity).let {
+        ContactDTO(
+                it.id,
+                it.firstName,
+                it.lastName,
+                it.address,
+                mapPhoneEntity2Dto(it.phones)
+        )
+    }
+
+    private fun updateContact(old: ContactEntity, new: UpdateContactDTO): ContactDTO {
+
+        val forRemoving = old.phones.filterNot { pe ->
+            new.phones.containsByPredicate { it.number == pe.number }
+        }
+
+        val remainingPhones = (old.phones - forRemoving).toMutableSet().apply {
+            addAll(
+                    mapPhoneDTO2Entity(new.phones, old)
+            )
+        }
+
+        old.apply {
+            firstName = new.firstName
+            lastName = new.lastName
+            address = new.address
+            phones = remainingPhones
+        }
+
+        val entity = save(old)
+        phoneRepository.deleteAll(forRemoving)
+        return entity
+    }
+
+    private fun mapPhoneDTO2Entity(dtos: List<PhoneDTO>, contactEntity: ContactEntity): MutableSet<PhoneEntity> =
+            dtos.map { phoneDto ->
+                PhoneEntity(
+                        phoneDto.number,
+                        typeCache[phoneDto.type] ?: error("Invalid phone type"),
+                        contactEntity
+                )
+            }.toMutableSet()
+
+    private fun mapPhoneEntity2Dto(entities: Set<PhoneEntity>): List<PhoneDTO> = entities.map { phoneEntity ->
+        PhoneDTO(
+                phoneEntity.id,
+                phoneEntity.number,
+                phoneEntity.phoneType.type
+        )
+    }.toList()
 }
+

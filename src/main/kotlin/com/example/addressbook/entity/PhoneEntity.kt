@@ -31,4 +31,18 @@ open class PhoneEntity() {
     @JsonBackReference
     open lateinit var contact: ContactEntity
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is PhoneEntity) return false
+
+        if (number != other.number) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return number.hashCode()
+    }
+
+
 }

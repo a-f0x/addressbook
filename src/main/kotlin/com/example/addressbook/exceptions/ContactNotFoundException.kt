@@ -1,6 +1,7 @@
 package com.example.addressbook.exceptions
 
-class ContactNotFoundException(val details: Map<String, Any>) : Exception() {
+class ContactNotFoundException(contactId: Int) : Exception() {
+    val details: Map<String, Any> = mapOf("id" to contactId)
     override val message: String
         get() {
             return "Contact not found"

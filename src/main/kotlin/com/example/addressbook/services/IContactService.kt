@@ -1,11 +1,15 @@
 package com.example.addressbook.services
 
 import com.example.addressbook.dto.ContactDTO
+import com.example.addressbook.dto.CreateContactDTO
+import com.example.addressbook.dto.UpdateContactDTO
+import com.example.addressbook.exceptions.ContactNotFoundException
 
 interface IContactService {
-    fun add(dto: ContactDTO): ContactDTO
+    fun add(dto: CreateContactDTO): ContactDTO
 
-    fun update(dto: ContactDTO): ContactDTO
+    @Throws(ContactNotFoundException::class)
+    fun update(dto: UpdateContactDTO): ContactDTO
 
     fun getAll(): List<ContactDTO>
 }

@@ -79,3 +79,10 @@ fun createInternalServerErrorResponseEntity(errorMessage: String): ResponseEntit
         ),
         HttpStatus.INTERNAL_SERVER_ERROR
 )
+
+
+inline fun <T> Iterable<T>.containsByPredicate(predicate: (T) -> Boolean): Boolean {
+    if (this is Collection && isEmpty()) return false
+    for (element in this) if (predicate(element)) return true
+    return false
+}
