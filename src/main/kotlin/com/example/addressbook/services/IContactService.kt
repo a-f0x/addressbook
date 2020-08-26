@@ -15,5 +15,5 @@ interface IContactService {
 
     fun delete(ids: List<Int>)
 
-    fun search(firstName: String, lastName: String?): List<ContactDTO>
+    fun search(query: String): List<ContactDTO>
 }

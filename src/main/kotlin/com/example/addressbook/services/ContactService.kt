@@ -69,25 +69,14 @@ class ContactService(
         contactRepository.deleteAllByIdIn(ids)
     }
 
-    override fun search(firstName: String, lastName: String?): List<ContactDTO> {
-        return if (lastName != null) contactRepository.findAllByLastNameAndFirstName(lastName, firstName).map {
-            ContactDTO(
-                    it.id,
-                    it.firstName,
-                    it.lastName,
-                    it.address,
-                    mapPhoneEntity2Dto(it.phones)
-            )
-        } else
-            contactRepository.findAllByFirstName(firstName).map {
-                ContactDTO(
-                        it.id,
-                        it.firstName,
-                        it.lastName,
-                        it.address,
-                        mapPhoneEntity2Dto(it.phones)
-                )
-            }
+    override fun search(query: String): List<ContactDTO> = contactRepository.findContacts(query).map {
+        ContactDTO(
+                it.id,
+                it.firstName,
+                it.lastName,
+                it.address,
+                mapPhoneEntity2Dto(it.phones)
+        )
     }
 
     private fun save(entity: ContactEntity): ContactDTO = contactRepository.save(entity).let {

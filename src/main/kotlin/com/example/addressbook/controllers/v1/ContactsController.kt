@@ -34,10 +34,7 @@ class ContactsController(private val service: IContactService) {
     }
 
     @GetMapping(path = ["/search"], produces = [(MediaType.APPLICATION_JSON_VALUE)])
-    fun searchContacts(
-            @RequestParam("first_name") firstName: String,
-            @RequestParam("last_name") lastName: String?,
-
-            ): ResponseEntity<ResponseDTO<List<ContactDTO>>> = createSuccessResponseEntity(service.search(firstName, lastName))
+    fun searchContacts(@RequestParam("query") query: String): ResponseEntity<ResponseDTO<List<ContactDTO>>> =
+            createSuccessResponseEntity(service.search(query))
 
 }
