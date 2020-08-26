@@ -2,6 +2,7 @@ package com.example.addressbook.validators
 
 import com.example.addressbook.dto.ContactDTO
 import com.example.addressbook.entity.PhoneEntity
+import com.example.addressbook.exceptions.PhoneValidationException
 import com.example.addressbook.isBlank
 import com.example.addressbook.repository.PhoneRepository
 

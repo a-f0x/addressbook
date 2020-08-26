@@ -47,10 +47,10 @@ class ContactService(
     @Throws(ContactNotFoundException::class)
     @Transactional
     override fun update(dto: UpdateContactDTO): ContactDTO {
-        val old = contactRepository.findById(dto.id)
-        if (old.isPresent.not())
+        val optionalContactEntity = contactRepository.findById(dto.id)
+        if (optionalContactEntity.isPresent.not())
             throw ContactNotFoundException(dto.id)
-        return updateContact(old.get(), dto)
+        return updateContact(optionalContactEntity.get(), dto)
 
     }
 
@@ -100,26 +100,28 @@ class ContactService(
         )
     }
 
-    private fun updateContact(old: ContactEntity, new: UpdateContactDTO): ContactDTO {
+    private fun updateContact(contactEntity: ContactEntity, updateContactDTO: UpdateContactDTO): ContactDTO {
 
-        val forRemoving = old.phones.filterNot { pe ->
-            new.phones.containsByPredicate { it.number == pe.number }
+        val forRemoving = contactEntity.phones.filterNot { pe ->
+            updateContactDTO.phones.containsByPredicate { it.number == pe.number }
         }
 
-        val remainingPhones = (old.phones - forRemoving).toMutableSet().apply {
-            addAll(
-                    mapPhoneDTO2Entity(new.phones, old)
-            )
+        val remainingPhones = (contactEntity.phones - forRemoving).toMutableSet()
+
+        remainingPhones.forEach { pe ->
+            pe.phoneType = getTypeEntity(updateContactDTO.phones.first { it.number == pe.number }.type)
         }
 
-        old.apply {
-            firstName = new.firstName
-            lastName = new.lastName
-            address = new.address
+        remainingPhones.addAll(mapPhoneDTO2Entity(updateContactDTO.phones, contactEntity))
+
+        contactEntity.apply {
+            firstName = updateContactDTO.firstName
+            lastName = updateContactDTO.lastName
+            address = updateContactDTO.address
             phones = remainingPhones
         }
 
-        val entity = save(old)
+        val entity = save(contactEntity)
         phoneRepository.deleteAll(forRemoving)
         return entity
     }
@@ -127,18 +129,20 @@ class ContactService(
     private fun mapPhoneDTO2Entity(dtos: List<PhoneDTO>, contactEntity: ContactEntity): MutableSet<PhoneEntity> =
             dtos.map { phoneDto ->
                 PhoneEntity(
+
                         phoneDto.number,
-                        typeCache[phoneDto.type] ?: error("Invalid phone type"),
+                        getTypeEntity(phoneDto.type),
                         contactEntity
                 )
             }.toMutableSet()
 
     private fun mapPhoneEntity2Dto(entities: Set<PhoneEntity>): List<PhoneDTO> = entities.map { phoneEntity ->
         PhoneDTO(
-                phoneEntity.id,
                 phoneEntity.number,
                 phoneEntity.phoneType.type
         )
     }.toList()
+
+    private fun getTypeEntity(type: PhoneType): PhoneTypeEntity = typeCache[type] ?: error("Invalid phone type")
 }
 
